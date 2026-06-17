@@ -1,17 +1,11 @@
-databases:
-  # 1. POSTGRESQL DATABASE
-  - name: chatsphere-postgres
-    databaseName: chatsphere
-    plan: free
-
 services:
-  # 2. REDIS CACHE & LOCKING
+  # 1. REDIS CACHE & LOCKING
   - type: redis
     name: chatsphere-redis
     plan: free
     ipAllowList: []
 
-  # 3. RABBITMQ MESSAGE BROKER (Docker Image Runtime)
+  # 2. RABBITMQ MESSAGE BROKER (Docker Image Runtime)
   - type: web
     name: chatsphere-rabbitmq
     runtime: image
@@ -19,7 +13,7 @@ services:
       url: docker.io/library/rabbitmq:3-management-alpine
     plan: free
 
-  # 4. CENTRAL CONFIG SERVER
+  # 3. CENTRAL CONFIG SERVER
   - type: web
     name: config-server
     env: docker
@@ -29,7 +23,7 @@ services:
       - key: SPRING_PROFILES_ACTIVE
         value: native
 
-  # 5. DISCOVERY SERVER (EUREKA)
+  # 4. DISCOVERY SERVER (EUREKA)
   - type: web
     name: discovery-server
     env: docker
@@ -39,7 +33,7 @@ services:
       - key: CONFIG_SERVER_URL
         value: http://config-server:8888
 
-  # 6. API GATEWAY
+  # 5. API GATEWAY
   - type: web
     name: api-gateway
     env: docker
@@ -51,7 +45,7 @@ services:
       - key: SPRING_DATA_REDIS_HOST
         value: chatsphere-redis
 
-  # 7. AUTHENTICATION SERVICE
+  # 6. AUTHENTICATION SERVICE
   - type: web
     name: auth-service
     env: docker
@@ -59,31 +53,15 @@ services:
     dockerfilePath: auth-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-      - key: DB_HOST
-        fromDatabase:
-          name: chatsphere-postgres
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: chatsphere-postgres
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: database
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: user
+        value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: chatsphere-postgres
-          property: password
+        value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
 
-  # 8. USER PROFILE SERVICE
+  # 7. USER PROFILE SERVICE
   - type: web
     name: user-service
     env: docker
@@ -91,29 +69,13 @@ services:
     dockerfilePath: user-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-      - key: DB_HOST
-        fromDatabase:
-          name: chatsphere-postgres
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: chatsphere-postgres
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: database
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: user
+        value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: chatsphere-postgres
-          property: password
+        value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
 
-  # 9. CHAT MESSAGE SERVICE
+  # 8. CHAT MESSAGE SERVICE
   - type: web
     name: chat-service
     env: docker
@@ -121,27 +83,11 @@ services:
     dockerfilePath: chat-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-      - key: DB_HOST
-        fromDatabase:
-          name: chatsphere-postgres
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: chatsphere-postgres
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: database
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: user
+        value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: chatsphere-postgres
-          property: password
+        value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
       - key: SPRING_REDIS_HOST
         value: chatsphere-redis
       - key: SPRING_DATA_REDIS_HOST
@@ -149,7 +95,7 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
 
-  # 10. GROUP COLLABORATION SERVICE
+  # 9. GROUP COLLABORATION SERVICE
   - type: web
     name: group-service
     env: docker
@@ -157,27 +103,11 @@ services:
     dockerfilePath: group-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-      - key: DB_HOST
-        fromDatabase:
-          name: chatsphere-postgres
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: chatsphere-postgres
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: database
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: user
+        value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: chatsphere-postgres
-          property: password
+        value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
       - key: SPRING_REDIS_HOST
         value: chatsphere-redis
       - key: SPRING_DATA_REDIS_HOST
@@ -185,14 +115,14 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
 
-  # 11. MEDIA SERVICE
+  # 10. MEDIA SERVICE
   - type: web
     name: media-service
     env: docker
     plan: free
     dockerfilePath: media-service/Dockerfile
 
-  # 12. PRESENCE TRACKING SERVICE
+  # 11. PRESENCE TRACKING SERVICE
   - type: web
     name: presence-service
     env: docker
@@ -204,7 +134,7 @@ services:
       - key: SPRING_DATA_REDIS_HOST
         value: chatsphere-redis
 
-  # 13. ASYNCHRONOUS NOTIFICATION SERVICE
+  # 12. ASYNCHRONOUS NOTIFICATION SERVICE
   - type: web
     name: notification-service
     env: docker
@@ -212,31 +142,15 @@ services:
     dockerfilePath: notification-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-      - key: DB_HOST
-        fromDatabase:
-          name: chatsphere-postgres
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: chatsphere-postgres
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: database
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: user
+        value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: chatsphere-postgres
-          property: password
+        value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
 
-  # 14. REAL-TIME ANALYTICS SERVICE
+  # 13. REAL-TIME ANALYTICS SERVICE
   - type: web
     name: analytics-service
     env: docker
@@ -250,7 +164,7 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
 
-  # 15. COMPLIANCE AUDIT SERVICE
+  # 14. COMPLIANCE AUDIT SERVICE
   - type: web
     name: audit-service
     env: docker
@@ -258,31 +172,15 @@ services:
     dockerfilePath: audit-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
-      - key: DB_HOST
-        fromDatabase:
-          name: chatsphere-postgres
-          property: host
-      - key: DB_PORT
-        fromDatabase:
-          name: chatsphere-postgres
-          property: port
-      - key: DB_NAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: database
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
       - key: SPRING_DATASOURCE_USERNAME
-        fromDatabase:
-          name: chatsphere-postgres
-          property: user
+        value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
-        fromDatabase:
-          name: chatsphere-postgres
-          property: password
+        value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
 
-  # 16. REACT FRONTEND STATIC SITE
+  # 15. REACT FRONTEND STATIC SITE
   - type: web
     runtime: static
     name: frontend
