@@ -56,7 +56,7 @@ services:
     dockerfilePath: auth-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
@@ -72,7 +72,7 @@ services:
     dockerfilePath: user-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
@@ -86,7 +86,7 @@ services:
     dockerfilePath: chat-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
@@ -106,7 +106,7 @@ services:
     dockerfilePath: group-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
@@ -145,7 +145,7 @@ services:
     dockerfilePath: notification-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
@@ -175,7 +175,7 @@ services:
     dockerfilePath: audit-service/Dockerfile
     envVars:
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
