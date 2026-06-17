@@ -11,7 +11,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/presence")
 @RequiredArgsConstructor
-public class UserPresenceController {
+public class PresenceController {
 
     private final PresenceService presenceService;
 

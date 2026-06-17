@@ -11,7 +11,6 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -50,9 +49,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
                     if (token != null && JwtUtil.validateToken(token)) {
                         String userId = JwtUtil.getUserId(token);
-                        Principal principal = new UsernamePasswordAuthenticationToken(
-                                userId, null, List.of(() -> "ROLE_USER")
-                        );
+                        Principal principal = () -> userId;
                         accessor.setUser(principal);
                         log.info("WebSocket presence authenticated user: {}", userId);
                     } else {
