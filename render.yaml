@@ -1,3 +1,6 @@
+# ChatSphere X Production Render Blueprint Configuration
+databases: [] # No database provisioned internally; using external ledgerlens-db
+
 services:
   # 1. REDIS CACHE & LOCKING
   - type: redis
