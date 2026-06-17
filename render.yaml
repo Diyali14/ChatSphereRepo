@@ -2,7 +2,6 @@ databases:
   # 1. POSTGRESQL DATABASE
   - name: chatsphere-postgres
     databaseName: chatsphere
-    user: postgres
     plan: free
 
 services:
@@ -10,6 +9,7 @@ services:
   - type: redis
     name: chatsphere-redis
     plan: free
+    ipAllowList: []
 
   # 3. RABBITMQ MESSAGE BROKER (Docker Image Runtime)
   - type: web
@@ -18,7 +18,6 @@ services:
     image:
       url: docker.io/library/rabbitmq:3-management-alpine
     plan: free
-    port: 5672
 
   # 4. CENTRAL CONFIG SERVER
   - type: web
@@ -26,7 +25,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: config-server/Dockerfile
-    port: 8888
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: native
@@ -37,7 +35,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: discovery-server/Dockerfile
-    port: 8761
     envVars:
       - key: CONFIG_SERVER_URL
         value: http://config-server:8888
@@ -48,7 +45,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: api-gateway/Dockerfile
-    port: 8080
     envVars:
       - key: SPRING_REDIS_HOST
         value: chatsphere-redis
@@ -61,7 +57,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: auth-service/Dockerfile
-    port: 8081
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
@@ -94,7 +89,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: user-service/Dockerfile
-    port: 8082
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
@@ -125,7 +119,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: chat-service/Dockerfile
-    port: 8083
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
@@ -162,7 +155,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: group-service/Dockerfile
-    port: 8084
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
@@ -199,7 +191,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: media-service/Dockerfile
-    port: 8085
 
   # 12. PRESENCE TRACKING SERVICE
   - type: web
@@ -207,7 +198,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: presence-service/Dockerfile
-    port: 8086
     envVars:
       - key: SPRING_REDIS_HOST
         value: chatsphere-redis
@@ -220,7 +210,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: notification-service/Dockerfile
-    port: 8087
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
@@ -253,7 +242,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: analytics-service/Dockerfile
-    port: 8088
     envVars:
       - key: SPRING_REDIS_HOST
         value: chatsphere-redis
@@ -268,7 +256,6 @@ services:
     env: docker
     plan: free
     dockerfilePath: audit-service/Dockerfile
-    port: 8089
     envVars:
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
@@ -297,8 +284,7 @@ services:
 
   # 16. REACT FRONTEND STATIC SITE
   - type: web
+    runtime: static
     name: frontend
-    env: static
-    plan: free
-    publishPath: frontend/dist
+    staticPublishPath: frontend/dist
     buildCommand: cd frontend && npm install && npm run build
