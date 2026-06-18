@@ -64,11 +64,17 @@ services:
       - key: SPRING_CONFIG_IMPORT
         value: optional:configserver:http://config-server-bk51:8888
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=auth_schema
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
         value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: auth_schema
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: auth_schema
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
@@ -86,11 +92,13 @@ services:
       - key: SPRING_CONFIG_IMPORT
         value: optional:configserver:http://config-server-bk51:8888
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=auth_schema
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
         value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: auth_schema
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
@@ -108,11 +116,17 @@ services:
       - key: SPRING_CONFIG_IMPORT
         value: optional:configserver:http://config-server-bk51:8888
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=chat_schema
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
         value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: chat_schema
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: chat_schema
       - key: SPRING_REDIS_HOST
         value: red-d8pdllbeo5us73aei7ng
       - key: SPRING_DATA_REDIS_HOST
@@ -134,11 +148,17 @@ services:
       - key: SPRING_CONFIG_IMPORT
         value: optional:configserver:http://config-server-bk51:8888
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=group_schema
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
         value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: group_schema
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: group_schema
       - key: SPRING_REDIS_HOST
         value: red-d8pdllbeo5us73aei7ng
       - key: SPRING_DATA_REDIS_HOST
@@ -192,11 +212,17 @@ services:
       - key: SPRING_CONFIG_IMPORT
         value: optional:configserver:http://config-server-bk51:8888
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=notification_schema
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
         value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: notification_schema
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: notification_schema
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
@@ -234,11 +260,17 @@ services:
       - key: SPRING_CONFIG_IMPORT
         value: optional:configserver:http://config-server-bk51:8888
       - key: SPRING_DATASOURCE_URL
-        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory
+        value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=audit_schema
       - key: SPRING_DATASOURCE_USERNAME
         value: fintech_svky_user
       - key: SPRING_DATASOURCE_PASSWORD
         value: Aj9yQ1gc6u5f8uOvLrITRu40Xf7UZNFM
+      - key: SPRING_FLYWAY_SCHEMAS
+        value: audit_schema
+      - key: SPRING_FLYWAY_CREATE_SCHEMAS
+        value: "true"
+      - key: SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA
+        value: audit_schema
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
@@ -252,3 +284,6 @@ services:
     name: frontend
     staticPublishPath: frontend/dist
     buildCommand: cd frontend && npm install && npm run build
+    envVars:
+      - key: VITE_API_BASE_URL
+        sync: false

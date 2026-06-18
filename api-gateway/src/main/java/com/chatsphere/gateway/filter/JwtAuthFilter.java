@@ -23,6 +23,11 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getURI().getPath();
 
+        // Bypass check for CORS preflight OPTIONS requests
+        if (org.springframework.http.HttpMethod.OPTIONS.equals(request.getMethod())) {
+            return chain.filter(exchange);
+        }
+
         // Bypass check for auth paths, swagger documentation, and actuator health endpoints
         if (isSecuredBypass(path)) {
             return chain.filter(exchange);
