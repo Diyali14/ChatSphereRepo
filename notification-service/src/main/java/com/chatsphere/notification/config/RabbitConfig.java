@@ -43,22 +43,22 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Binding bindingChat(@Qualifier("notificationQueue") Queue notificationQueue, TopicExchange topicExchange) {
+    public Binding bindingChat(@Qualifier("notificationQueue") Queue notificationQueue, @Qualifier("topicExchange") TopicExchange topicExchange) {
         return BindingBuilder.bind(notificationQueue).to(topicExchange).with(ROUTING_CHAT_SENT);
     }
 
     @Bean
-    public Binding bindingGroupMsg(@Qualifier("notificationQueue") Queue notificationQueue, TopicExchange topicExchange) {
+    public Binding bindingGroupMsg(@Qualifier("notificationQueue") Queue notificationQueue, @Qualifier("topicExchange") TopicExchange topicExchange) {
         return BindingBuilder.bind(notificationQueue).to(topicExchange).with(ROUTING_GROUP_SENT);
     }
 
     @Bean
-    public Binding bindingGroupAct(@Qualifier("notificationQueue") Queue notificationQueue, TopicExchange topicExchange) {
+    public Binding bindingGroupAct(@Qualifier("notificationQueue") Queue notificationQueue, @Qualifier("topicExchange") TopicExchange topicExchange) {
         return BindingBuilder.bind(notificationQueue).to(topicExchange).with(ROUTING_GROUP_ACTIVITY);
     }
 
     @Bean
-    public Binding bindingDlq(@Qualifier("deadLetterQueue") Queue deadLetterQueue, TopicExchange deadLetterExchange) {
+    public Binding bindingDlq(@Qualifier("deadLetterQueue") Queue deadLetterQueue, @Qualifier("deadLetterExchange") TopicExchange deadLetterExchange) {
         return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(ROUTING_FAILED);
     }
 }
