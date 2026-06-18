@@ -4,7 +4,7 @@ eureka:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://discovery-server:8761/eureka/}
     registryFetchIntervalSeconds: 10
   instance:
-    prefer-ip-address: false
+    prefer-ip-address: true
     hostname: ${RENDER_SERVICE_NAME:${spring.application.name}}
     leaseRenewalIntervalInSeconds: 10
 
