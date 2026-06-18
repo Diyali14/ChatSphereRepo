@@ -815,6 +815,8 @@ export default function Dashboard({ onNavigate }) {
                   <span className="thread-name">{c.name}</span>
                   <span className="thread-preview">{c.description || 'No description'}</span>
                 </div>
+              </div>
+            ))}
           </div>
         )}
 

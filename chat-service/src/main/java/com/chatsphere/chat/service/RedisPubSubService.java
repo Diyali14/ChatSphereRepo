@@ -12,6 +12,7 @@ import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -85,8 +86,8 @@ public class RedisPubSubService {
     @Bean
     public RedisMessageListenerContainer redisContainer(
             RedisConnectionFactory connectionFactory,
-            MessageListenerAdapter chatListenerAdapter,
-            MessageListenerAdapter receiptListenerAdapter) {
+            @Qualifier("chatListenerAdapter") MessageListenerAdapter chatListenerAdapter,
+            @Qualifier("receiptListenerAdapter") MessageListenerAdapter receiptListenerAdapter) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
         container.addMessageListener(chatListenerAdapter, new PatternTopic(CHANNEL_CHAT));
