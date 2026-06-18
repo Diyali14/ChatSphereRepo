@@ -1,6 +1,7 @@
 package com.chatsphere.notification.config;
 
 import org.springframework.amqp.core.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -42,22 +43,22 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Binding bindingChat(Queue notificationQueue, TopicExchange topicExchange) {
+    public Binding bindingChat(@Qualifier("notificationQueue") Queue notificationQueue, TopicExchange topicExchange) {
         return BindingBuilder.bind(notificationQueue).to(topicExchange).with(ROUTING_CHAT_SENT);
     }
 
     @Bean
-    public Binding bindingGroupMsg(Queue notificationQueue, TopicExchange topicExchange) {
+    public Binding bindingGroupMsg(@Qualifier("notificationQueue") Queue notificationQueue, TopicExchange topicExchange) {
         return BindingBuilder.bind(notificationQueue).to(topicExchange).with(ROUTING_GROUP_SENT);
     }
 
     @Bean
-    public Binding bindingGroupAct(Queue notificationQueue, TopicExchange topicExchange) {
+    public Binding bindingGroupAct(@Qualifier("notificationQueue") Queue notificationQueue, TopicExchange topicExchange) {
         return BindingBuilder.bind(notificationQueue).to(topicExchange).with(ROUTING_GROUP_ACTIVITY);
     }
 
     @Bean
-    public Binding bindingDlq(Queue deadLetterQueue, TopicExchange deadLetterExchange) {
+    public Binding bindingDlq(@Qualifier("deadLetterQueue") Queue deadLetterQueue, TopicExchange deadLetterExchange) {
         return BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(ROUTING_FAILED);
     }
 }
