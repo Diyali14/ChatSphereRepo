@@ -21,6 +21,12 @@ public class GroupController {
 
     private final GroupService groupService;
 
+    @GetMapping
+    public ResponseEntity<List<Group>> getUserGroups(@RequestHeader("X-User-Id") String userIdHeader) {
+        UUID userId = UUID.fromString(userIdHeader);
+        return ResponseEntity.ok(groupService.getUserGroups(userId));
+    }
+
     @PostMapping
     public ResponseEntity<Group> createGroup(
             @RequestHeader("X-User-Id") String userIdHeader,

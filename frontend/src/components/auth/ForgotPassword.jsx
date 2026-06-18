@@ -13,7 +13,8 @@ export default function ForgotPassword({ onNavigate }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/auth/forgot-password?email=${encodeURIComponent(email)}`, {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${baseUrl}/api/auth/forgot-password?email=${encodeURIComponent(email)}`, {
         method: 'POST',
       });
       const text = await response.text();

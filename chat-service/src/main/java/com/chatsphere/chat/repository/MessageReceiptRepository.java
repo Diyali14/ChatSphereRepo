@@ -9,4 +9,5 @@ import java.util.UUID;
 @Repository
 public interface MessageReceiptRepository extends JpaRepository<MessageReceipt, UUID> {
     List<MessageReceipt> findByMessageId(UUID messageId);
+    List<MessageReceipt> findByMessageIdIn(List<UUID> messageIds);
 }

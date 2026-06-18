@@ -337,5 +337,13 @@ public class GroupService {
                 .filter(userId -> !userId.equals(excludeSender))
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<Group> getUserGroups(UUID userId) {
+        List<GroupMember> memberships = memberRepository.findByUserId(userId);
+        List<UUID> groupIds = memberships.stream().map(GroupMember::getGroupId).collect(Collectors.toList());
+        if (groupIds.isEmpty()) return new java.util.ArrayList<>();
+        return groupRepository.findAllById(groupIds);
+    }
 }
 

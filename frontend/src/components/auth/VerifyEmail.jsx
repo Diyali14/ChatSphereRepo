@@ -13,7 +13,8 @@ export default function VerifyEmail({ onNavigate, email }) {
     setLoading(true);
 
     try {
-      const response = await fetch(`/api/auth/verify?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`);
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${baseUrl}/api/auth/verify?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`);
       const text = await response.text();
 
       if (response.ok) {

@@ -33,6 +33,10 @@ public class Chat {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String message;
 
+    @Transient
+    @Builder.Default
+    private String status = "SENT";
+
     @Builder.Default
     private String type = "TEXT";
 

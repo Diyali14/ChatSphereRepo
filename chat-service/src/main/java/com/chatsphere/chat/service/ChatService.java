@@ -14,9 +14,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.chatsphere.chat.dto.ReceiptUpdateEvent;
+
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -37,6 +40,7 @@ public class ChatService {
     private final OutboxEventRepository outboxEventRepository;
     private final RedissonClient redissonClient;
     private final ObjectMapper objectMapper;
+    private final RedisPubSubService redisPubSubService;
 
     public UUID getConversationId(UUID u1, UUID u2) {
         String sorted = u1.compareTo(u2) < 0 ? 
@@ -152,7 +156,27 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<Chat> getMessages(UUID senderId, UUID receiverId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return chatRepository.findConversationMessages(senderId, receiverId, pageable);
+        List<Chat> chats = chatRepository.findConversationMessages(senderId, receiverId, pageable);
+        if (chats.isEmpty()) {
+            return chats;
+        }
+        List<UUID> messageIds = chats.stream().map(Chat::getId).collect(Collectors.toList());
+        List<MessageReceipt> receipts = receiptRepository.findByMessageIdIn(messageIds);
+        Map<UUID, String> statusMap = receipts.stream()
+                .collect(Collectors.toMap(
+                        MessageReceipt::getMessageId,
+                        MessageReceipt::getStatus,
+                        (s1, s2) -> {
+                            if ("READ".equals(s1) || "READ".equals(s2)) return "READ";
+                            if ("DELIVERED".equals(s1) || "DELIVERED".equals(s2)) return "DELIVERED";
+                            return s1;
+                        }
+                ));
+        for (Chat chat : chats) {
+            String status = statusMap.get(chat.getId());
+            chat.setStatus(status != null ? status : "SENT");
+        }
+        return chats;
     }
 
     @Transactional
@@ -307,6 +331,9 @@ public class ChatService {
 
     @Transactional
     public void updateReceipt(UUID messageId, UUID userId, String status) {
+        Chat chat = chatRepository.findById(messageId)
+                .orElseThrow(() -> new RuntimeException("Message not found"));
+
         receiptRepository.findByMessageId(messageId).stream()
                 .filter(r -> r.getUserId().equals(userId))
                 .findFirst()
@@ -324,5 +351,15 @@ public class ChatService {
                             .build();
                     receiptRepository.save(r);
                 });
+
+        ReceiptUpdateEvent event = ReceiptUpdateEvent.builder()
+                .messageId(messageId.toString())
+                .clientMessageId(chat.getClientMessageId())
+                .status(status)
+                .senderId(chat.getSenderId().toString())
+                .receiverId(userId.toString())
+                .build();
+
+        redisPubSubService.publishReceipt(event);
     }
 }

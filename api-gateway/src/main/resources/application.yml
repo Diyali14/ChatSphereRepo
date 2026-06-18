@@ -33,6 +33,22 @@ spring:
           uri: lb://media-service
           predicates:
             - Path=/api/media/**
+        - id: presence-service
+          uri: lb://presence-service
+          predicates:
+            - Path=/api/presence/**
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/notifications/**
+        - id: audit-service
+          uri: lb://audit-service
+          predicates:
+            - Path=/api/audit/**
+        - id: analytics-service
+          uri: lb://analytics-service
+          predicates:
+            - Path=/api/analytics/**
         - id: chat-ws
           uri: lb:ws://chat-service
           predicates:

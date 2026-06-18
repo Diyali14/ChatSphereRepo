@@ -15,7 +15,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query(value = "SELECT * FROM users WHERE enabled = true AND (" +
                    "username ILIKE CONCAT('%', :query, '%') OR " +
-                   "email ILIKE CONCAT('%', :query, '%') OR " +
+                   "email = :query OR " +
+                   "phone = :query OR " +
                    "bio ILIKE CONCAT('%', :query, '%'))", nativeQuery = true)
     List<User> searchUsers(@Param("query") String query);
 }

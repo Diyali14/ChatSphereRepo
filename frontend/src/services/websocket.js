@@ -1,6 +1,6 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { addMessage, updateOnlineStatus, setTypingState, addNotification } from '../store/chatSlice';
+import { addMessage, updateOnlineStatus, setTypingState, addNotification, updateMessageStatus } from '../store/chatSlice';
 
 let chatClient = null;
 let groupClient = null;
@@ -44,6 +44,19 @@ export function connectAllWebSockets(token, dispatch) {
         dispatch(addMessage({
           conversationId: payload.senderId, // Index by sender
           message: payload
+        }));
+      });
+
+      // Subscribe to private read receipts queue
+      chatClient.subscribe('/user/queue/receipts', (receiptMsg) => {
+        const payload = JSON.parse(receiptMsg.body);
+        console.log('[WS Chat] Receipt received: ', payload);
+        
+        dispatch(updateMessageStatus({
+          conversationId: payload.receiverId,
+          clientMessageId: payload.clientMessageId,
+          messageId: payload.messageId,
+          status: payload.status
         }));
       });
 
@@ -189,6 +202,20 @@ export function publishPresenceStatus(status) {
       body: JSON.stringify({ status })
     });
   }
+}
+
+export function publishMessageReceipt(messageId, status) {
+  if (chatClient && chatClient.connected) {
+    chatClient.publish({
+      destination: '/app/chat.read',
+      body: JSON.stringify({
+        messageId,
+        status
+      })
+    });
+    return true;
+  }
+  return false;
 }
 
 export function disconnectAllWebSockets() {

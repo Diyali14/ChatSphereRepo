@@ -33,6 +33,9 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(unique = true, length = 50)
+    private String phone;
+
     @Builder.Default
     private String status = "OFFLINE";
 

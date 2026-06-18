@@ -30,6 +30,9 @@ public class User {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(unique = true, length = 50)
+    private String phone;
+
     private String status;
 
     private boolean enabled;

@@ -3,23 +3,31 @@ import { useSelector, useDispatch } from 'react-redux';
 import { 
   MessageSquare, Users, Settings, LogOut, Search, Send, Paperclip, Mic, Smile, 
   MoreVertical, Calendar, Archive, ShieldAlert, Trash, Plus, Download, Play, 
-  Check, CheckCheck, Lock, Monitor, AlertCircle, X, ShieldCheck
+  Check, CheckCheck, Lock, Monitor, AlertCircle, X, ShieldCheck, Bell
 } from 'lucide-react';
 import { apiFetch } from '../services/api';
 import { 
   clearAuth, setActiveConversation, setConversations, setMessages, addMessage, 
-  updateOnlineStatus, setTypingState, setBlockedUsers, updateMessage
+  updateOnlineStatus, setTypingState, setBlockedUsers, updateMessage, setAuth,
+  updateMessageStatus, setNotifications
 } from '../store/chatSlice';
 import { 
   connectAllWebSockets, disconnectAllWebSockets, publishPrivateMessage, 
   publishGroupMessage, publishTypingState, publishPresenceStatus, 
-  subscribeToGroup, subscribeToTyping 
+  subscribeToGroup, subscribeToTyping, publishMessageReceipt
 } from '../services/websocket';
+
+const resolveMediaUrl = (url) => {
+  if (url && url.startsWith('/')) {
+    return `${import.meta.env.VITE_API_BASE_URL || ''}${url}`;
+  }
+  return url;
+};
 
 export default function Dashboard({ onNavigate }) {
   const dispatch = useDispatch();
   const authState = useSelector(state => state.chat);
-  const { user, accessToken, activeConversation, conversations, messages, onlineUsers, typingStates, blockedUsers } = authState;
+  const { user, accessToken, activeConversation, conversations, messages, onlineUsers, typingStates, blockedUsers, notifications } = authState;
 
   // UI state variables
   const [sidebarTab, setSidebarTab] = useState('chats'); // chats, groups, settings, admin
@@ -41,6 +49,22 @@ export default function Dashboard({ onNavigate }) {
   const [adminAuditLogs, setAdminAuditLogs] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   
+  // Profile editing states
+  const [editBio, setEditBio] = useState(user?.bio || '');
+  const [editPhone, setEditPhone] = useState(user?.phone || '');
+  const [editAvatarUrl, setEditAvatarUrl] = useState(user?.avatarUrl || '');
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [profileMsg, setProfileMsg] = useState('');
+  const [profileErr, setProfileErr] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setEditBio(user.bio || '');
+      setEditPhone(user.phone || '');
+      setEditAvatarUrl(user.avatarUrl || '');
+    }
+  }, [user]);
+  
   // Refs
   const messageEndRef = useRef(null);
   const mediaRecorderRef = useRef(null);
@@ -54,6 +78,7 @@ export default function Dashboard({ onNavigate }) {
       connectAllWebSockets(accessToken, dispatch);
       loadConversations();
       loadBlockedUsers();
+      loadNotifications();
     }
     return () => {
       disconnectAllWebSockets();
@@ -84,20 +109,77 @@ export default function Dashboard({ onNavigate }) {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, activeConversation]);
 
+  // Trigger read receipts for unread received messages in active conversation
+  useEffect(() => {
+    if (activeConversation && !activeConversation.isGroup && messages[activeConversation.id]) {
+      const activeMsgs = messages[activeConversation.id];
+      activeMsgs.forEach(msg => {
+        if (msg.senderId !== user.id && msg.status !== 'READ' && !msg.isDeleted) {
+          publishMessageReceipt(msg.id, 'READ');
+          dispatch(updateMessageStatus({
+            conversationId: activeConversation.id,
+            clientMessageId: msg.clientMessageId,
+            messageId: msg.id,
+            status: 'READ'
+          }));
+        }
+      });
+    }
+  }, [activeConversation, messages[activeConversation?.id], user?.id]);
+
+  // Load notifications
+  const loadNotifications = async () => {
+    try {
+      const res = await apiFetch('/api/notifications');
+      if (res.ok) {
+        const list = await res.json();
+        dispatch(setNotifications(list));
+      }
+    } catch (e) {
+      console.error('Failed to load notifications', e);
+    }
+  };
+
+  const handleMarkNotificationAsRead = async (notificationId) => {
+    try {
+      const res = await apiFetch(`/api/notifications/${notificationId}/read`, {
+        method: 'PUT'
+      });
+      if (res.ok) {
+        loadNotifications();
+      }
+    } catch (e) {
+      console.error('Failed to mark notification as read', e);
+    }
+  };
+
   // Load user threads
   const loadConversations = async () => {
     try {
-      // Mock thread list: in production, we query historical chats and groups
-      // For demo, search for all users as conversations
+      let threads = [];
+
+      // Fetch users
       const response = await apiFetch('/api/users/search?query=');
       if (response.ok) {
         const users = await response.json();
-        // Filter out self
-        const threads = users
+        threads = users
           .filter(u => u.id !== user.id)
-          .map(u => ({ id: u.id, name: u.username, isGroup: false, avatarUrl: u.avatarUrl, bio: u.bio }));
-        dispatch(setConversations(threads));
+          .map(u => ({ id: u.id, name: u.username, isGroup: false, avatarUrl: u.avatarUrl, bio: u.bio, phone: u.phone }));
       }
+
+      // Fetch joined groups
+      try {
+        const groupResponse = await apiFetch('/api/groups');
+        if (groupResponse.ok) {
+          const groups = await groupResponse.json();
+          const groupThreads = groups.map(g => ({ id: g.id, name: g.name, isGroup: true, bio: g.description }));
+          threads = [...threads, ...groupThreads];
+        }
+      } catch (gErr) {
+        console.error('Failed to load groups', gErr);
+      }
+
+      dispatch(setConversations(threads));
     } catch (err) {
       console.error('Failed to load conversations', err);
     }
@@ -247,7 +329,8 @@ export default function Dashboard({ onNavigate }) {
     formData.append('file', file);
 
     try {
-      const uploadRes = await fetch('/api/media/upload', {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const uploadRes = await fetch(`${baseUrl}/api/media/upload`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${accessToken}` },
         body: formData
@@ -286,7 +369,8 @@ export default function Dashboard({ onNavigate }) {
         const formData = new FormData();
         formData.append('file', file);
 
-        const uploadRes = await fetch('/api/media/upload', {
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+        const uploadRes = await fetch(`${baseUrl}/api/media/upload`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${accessToken}` },
           body: formData
@@ -428,6 +512,84 @@ export default function Dashboard({ onNavigate }) {
     }
   };
 
+  // Profile picture upload handler
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      setProfileMsg('Uploading image...');
+      setProfileErr('');
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${baseUrl}/api/users/profile-picture`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: formData
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        // Update user state in Redux
+        const rToken = localStorage.getItem('cs_refresh');
+        dispatch(setAuth({
+          user: updatedUser,
+          accessToken,
+          refreshToken: rToken
+        }));
+        setEditAvatarUrl(updatedUser.avatarUrl);
+        setProfileMsg('Profile picture updated!');
+      } else {
+        const errText = await response.text();
+        setProfileErr(errText || 'Upload failed');
+      }
+    } catch (err) {
+      setProfileErr('Failed to upload profile picture: ' + err.message);
+    }
+  };
+
+  // Profile save (bio, phone) handler
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+    setIsSavingProfile(true);
+    setProfileMsg('');
+    setProfileErr('');
+
+    try {
+      const response = await apiFetch('/api/users/update-profile', {
+        method: 'PUT',
+        body: JSON.stringify({
+          ...user,
+          bio: editBio,
+          phone: editPhone,
+          avatarUrl: editAvatarUrl
+        })
+      });
+
+      if (response.ok) {
+        const updatedUser = await response.json();
+        const rToken = localStorage.getItem('cs_refresh');
+        dispatch(setAuth({
+          user: updatedUser,
+          accessToken,
+          refreshToken: rToken
+        }));
+        setProfileMsg('Profile updated successfully!');
+      } else {
+        const errText = await response.text();
+        setProfileErr(errText || 'Failed to update profile');
+      }
+    } catch (err) {
+      setProfileErr('Connection failure updating profile');
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
   const startNewConversation = (u) => {
     const thread = { id: u.id, name: u.username, isGroup: false, avatarUrl: u.avatarUrl };
     // Add to local list if not there
@@ -513,6 +675,30 @@ export default function Dashboard({ onNavigate }) {
             <Settings size={20} />
           </button>
 
+          <button 
+            className={`menu-icon-btn ${sidebarTab === 'notifications' ? 'active' : ''}`}
+            onClick={() => { setSidebarTab('notifications'); loadNotifications(); }}
+            title="Notifications"
+            style={{ position: 'relative' }}
+          >
+            <Bell size={20} />
+            {notifications && notifications.filter(n => !n.isRead).length > 0 && (
+              <span className="notification-badge" style={{
+                position: 'absolute',
+                top: '4px',
+                right: '4px',
+                backgroundColor: '#ef4444',
+                color: '#fff',
+                fontSize: '9px',
+                fontWeight: 'bold',
+                borderRadius: '50%',
+                padding: '2px 5px',
+                lineHeight: '1',
+                transform: 'translate(25%, -25%)'
+              }}>{notifications.filter(n => !n.isRead).length}</span>
+            )}
+          </button>
+
           {user?.username === 'admin' && (
             <button 
               className={`menu-icon-btn ${sidebarTab === 'admin' ? 'active' : ''}`}
@@ -561,7 +747,11 @@ export default function Dashboard({ onNavigate }) {
                 onClick={() => startNewConversation(u)}
               >
                 <div className="user-avatar-placeholder">
-                  {u.username.substring(0, 2).toUpperCase()}
+                  {u.avatarUrl ? (
+                    <img src={resolveMediaUrl(u.avatarUrl)} alt="Avatar" className="user-avatar-inner-img" />
+                  ) : (
+                    u.username.substring(0, 2).toUpperCase()
+                  )}
                 </div>
                 <div className="user-details">
                   <div className="user-name">{u.username}</div>
@@ -583,7 +773,11 @@ export default function Dashboard({ onNavigate }) {
                 onClick={() => dispatch(setActiveConversation(c))}
               >
                 <div className="user-avatar-placeholder">
-                  {c.name.substring(0, 2).toUpperCase()}
+                  {c.avatarUrl ? (
+                    <img src={resolveMediaUrl(c.avatarUrl)} alt="Avatar" className="user-avatar-inner-img" />
+                  ) : (
+                    c.name.substring(0, 2).toUpperCase()
+                  )}
                   <span className={`status-badge ${onlineUsers[c.id] === 'ONLINE' ? 'online' : 'offline'}`} />
                 </div>
                 <div className="thread-info">
@@ -621,8 +815,60 @@ export default function Dashboard({ onNavigate }) {
                   <span className="thread-name">{c.name}</span>
                   <span className="thread-preview">{c.description || 'No description'}</span>
                 </div>
-              </div>
-            ))}
+          </div>
+        )}
+
+        {sidebarTab === 'notifications' && (
+          <div className="threads-list">
+            <h2 className="list-title">Notifications</h2>
+            <div className="notifications-container" style={{ padding: '0 16px', overflowY: 'auto', height: 'calc(100% - 60px)' }}>
+              {(!notifications || notifications.length === 0) ? (
+                <div style={{ color: 'var(--text-secondary)', fontSize: '14px', textAlign: 'center', marginTop: '30px' }}>
+                  No notifications yet.
+                </div>
+              ) : (
+                notifications.map(n => (
+                  <div 
+                    key={n.id} 
+                    className="notification-item" 
+                    style={{ 
+                      padding: '12px', 
+                      borderRadius: '8px', 
+                      backgroundColor: n.isRead ? 'transparent' : 'rgba(59, 130, 246, 0.08)', 
+                      border: '1px solid var(--border-color)', 
+                      marginBottom: '10px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '4px',
+                      position: 'relative'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: '600', fontSize: '13px', color: 'var(--text-primary)' }}>{n.title}</span>
+                      <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>{formatTime(n.createdAt)}</span>
+                    </div>
+                    <p style={{ fontSize: '12px', color: 'var(--text-secondary)', margin: 0 }}>{n.content}</p>
+                    {!n.isRead && (
+                      <button 
+                        onClick={() => handleMarkNotificationAsRead(n.id)}
+                        style={{ 
+                          alignSelf: 'flex-end', 
+                          marginTop: '6px', 
+                          fontSize: '11px', 
+                          color: '#3b82f6', 
+                          background: 'none', 
+                          border: 'none', 
+                          cursor: 'pointer',
+                          padding: '2px 4px'
+                        }}
+                      >
+                        Mark as read
+                      </button>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         )}
 
@@ -631,14 +877,55 @@ export default function Dashboard({ onNavigate }) {
             <h2 className="list-title">Settings</h2>
             
             <div className="user-settings-summary">
-              <div className="settings-avatar">
-                {user?.username.substring(0, 2).toUpperCase()}
+              <div className="settings-avatar-wrapper">
+                {editAvatarUrl ? (
+                  <img src={resolveMediaUrl(editAvatarUrl)} alt="Avatar" className="settings-avatar-img" />
+                ) : (
+                  <div className="settings-avatar">
+                    {user?.username.substring(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <label className="avatar-upload-label">
+                  Change Photo
+                  <input type="file" accept="image/*" onChange={handleAvatarUpload} style={{ display: 'none' }} />
+                </label>
               </div>
               <div className="settings-user-info">
                 <h3>{user?.username}</h3>
                 <p>{user?.email}</p>
               </div>
             </div>
+
+            <form onSubmit={handleSaveProfile} className="profile-edit-form">
+              {profileMsg && <div className="profile-success-msg">{profileMsg}</div>}
+              {profileErr && <div className="profile-error-msg">{profileErr}</div>}
+
+              <div className="form-group">
+                <label style={{ fontSize: '12px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Bio</label>
+                <textarea 
+                  value={editBio} 
+                  onChange={e => setEditBio(e.target.value)} 
+                  placeholder="Tell us about yourself..."
+                  rows={3}
+                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-primary)', resize: 'vertical' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginTop: '12px' }}>
+                <label style={{ fontSize: '12px', fontWeight: '600', display: 'block', marginBottom: '6px' }}>Phone Number</label>
+                <input 
+                  type="text" 
+                  value={editPhone} 
+                  onChange={e => setEditPhone(e.target.value)} 
+                  placeholder="e.g. +1234567890"
+                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid var(--border-color)', backgroundColor: 'transparent', color: 'var(--text-primary)' }}
+                />
+              </div>
+
+              <button type="submit" disabled={isSavingProfile} className="btn-primary" style={{ marginTop: '16px', width: '100%' }}>
+                {isSavingProfile ? 'Saving...' : 'Save Profile'}
+              </button>
+            </form>
 
             <div className="sessions-list-container">
               <h4 className="section-title">Active Device Sessions</h4>
@@ -753,7 +1040,7 @@ export default function Dashboard({ onNavigate }) {
                         {msg.type === 'ATTACHMENT' && (
                           <div className="attachment-box">
                             <Paperclip size={16} />
-                            <a href={msg.message} target="_blank" rel="noopener noreferrer" className="attachment-link">
+                            <a href={resolveMediaUrl(msg.message)} target="_blank" rel="noopener noreferrer" className="attachment-link">
                               Attachment File ({msg.message.substring(msg.message.lastIndexOf('/') + 1)})
                             </a>
                           </div>
@@ -761,7 +1048,7 @@ export default function Dashboard({ onNavigate }) {
                         {msg.type === 'AUDIO' && (
                           <div className="audio-box">
                             <Play size={16} />
-                            <audio src={msg.message} controls className="audio-player" />
+                            <audio src={resolveMediaUrl(msg.message)} controls className="audio-player" />
                           </div>
                         )}
                       </>
@@ -771,7 +1058,13 @@ export default function Dashboard({ onNavigate }) {
                       <span className="msg-time">{formatTime(msg.createdAt)}</span>
                       {msg.senderId === user.id && (
                         <span className="receipt-check">
-                          <CheckCheck size={14} className="delivered" />
+                          {msg.status === 'READ' ? (
+                            <CheckCheck size={14} className="read-blue" style={{ color: '#3b82f6' }} />
+                          ) : msg.status === 'DELIVERED' ? (
+                            <CheckCheck size={14} className="delivered-gray" style={{ color: '#888' }} />
+                          ) : (
+                            <Check size={14} className="sent-gray" style={{ color: '#888' }} />
+                          )}
                         </span>
                       )}
                     </div>

@@ -71,6 +71,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                path.contains("/api/auth/verify") ||
                path.contains("/api/auth/forgot-password") ||
                path.contains("/api/auth/reset-password") ||
+               path.contains("/api/media/files") ||
                path.contains("/actuator") ||
                path.contains("/v3/api-docs") ||
                path.contains("/swagger-ui");

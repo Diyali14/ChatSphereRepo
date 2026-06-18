@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,6 +35,9 @@ public class AuthService {
     private final StringRedisTemplate redisTemplate;
     private final RabbitTemplate rabbitTemplate;
 
+    @Value("${app.verification.enabled:true}")
+    private boolean verificationEnabled;
+
     private static final int MAX_FAILED_ATTEMPTS = 5;
     private static final long LOCK_DURATION_MINUTES = 15;
     private static final String VERIFY_TOKEN_PREFIX = "verify_token:";
@@ -48,16 +52,32 @@ public class AuthService {
             throw new RuntimeException("Email already exists");
         }
 
+        boolean autoVerify = !verificationEnabled;
         User user = User.builder()
                 .id(UUID.randomUUID())
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .enabled(false) // Mandatory verification
+                .enabled(autoVerify)
                 .status("OFFLINE")
                 .build();
 
         userRepository.save(user);
+
+        if (autoVerify) {
+            // Publish registration event to RabbitMQ
+            UserActivityEvent event = UserActivityEvent.builder()
+                    .userId(user.getId())
+                    .username(user.getUsername())
+                    .activityType("REGISTRATION")
+                    .status("OFFLINE")
+                    .details("Auto-verified on registration")
+                    .timestamp(LocalDateTime.now())
+                    .build();
+            rabbitTemplate.convertAndSend("message.exchange", "user.activity", event);
+
+            return "Registration successful. User auto-verified.";
+        }
 
         // Generate email verification token
         String token = UUID.randomUUID().toString();
@@ -366,6 +386,7 @@ public class AuthService {
                 .email(user.getEmail())
                 .bio(user.getBio())
                 .avatarUrl(user.getAvatarUrl())
+                .phone(user.getPhone())
                 .status(user.getStatus())
                 .enabled(user.isEnabled())
                 .build();

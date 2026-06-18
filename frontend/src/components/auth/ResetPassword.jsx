@@ -23,8 +23,9 @@ export default function ResetPassword({ onNavigate }) {
     setLoading(true);
 
     try {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
       const response = await fetch(
-        `/api/auth/reset-password?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}&newPassword=${encodeURIComponent(password)}`,
+        `${baseUrl}/api/auth/reset-password?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}&newPassword=${encodeURIComponent(password)}`,
         { method: 'POST' }
       );
       const text = await response.text();

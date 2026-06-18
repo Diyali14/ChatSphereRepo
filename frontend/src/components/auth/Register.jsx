@@ -13,7 +13,8 @@ export default function Register({ onNavigate, setEmailForVerification }) {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+      const response = await fetch(`${baseUrl}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),
@@ -22,8 +23,13 @@ export default function Register({ onNavigate, setEmailForVerification }) {
       const text = await response.text();
 
       if (response.ok) {
-        setEmailForVerification(email);
-        onNavigate('verify-email');
+        if (text.includes("auto-verified") || text.includes("verified")) {
+          alert("Account created and auto-verified! You can now log in.");
+          onNavigate('login');
+        } else {
+          setEmailForVerification(email);
+          onNavigate('verify-email');
+        }
       } else {
         let errJson;
         try {

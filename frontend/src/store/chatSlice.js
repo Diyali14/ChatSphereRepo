@@ -87,6 +87,21 @@ const chatSlice = createSlice({
         }
       }
     },
+    updateMessageStatus: (state, action) => {
+      const { conversationId, clientMessageId, messageId, status } = action.payload;
+      const msgs = state.messages[conversationId];
+      if (msgs) {
+        const msg = msgs.find(m => 
+          (clientMessageId && m.clientMessageId === clientMessageId) || 
+          (messageId && m.id === messageId) ||
+          (clientMessageId && m.id === clientMessageId) ||
+          (messageId && m.clientMessageId === messageId)
+        );
+        if (msg) {
+          msg.status = status;
+        }
+      }
+    },
     setOnlineUsers: (state, action) => {
       state.onlineUsers = action.payload; // map of userId -> status
     },
@@ -131,6 +146,7 @@ export const {
   setMessages,
   addMessage,
   updateMessage,
+  updateMessageStatus,
   setOnlineUsers,
   updateOnlineStatus,
   setTypingState,
