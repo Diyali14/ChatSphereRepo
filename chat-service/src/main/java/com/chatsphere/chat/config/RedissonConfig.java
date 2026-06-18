@@ -20,7 +20,11 @@ public class RedissonConfig {
     public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer()
-              .setAddress("redis://" + redisHost + ":" + redisPort);
+              .setAddress("redis://" + redisHost + ":" + redisPort)
+              .setConnectionPoolSize(4)
+              .setConnectionMinimumIdleSize(1)
+              .setSubscriptionConnectionPoolSize(4)
+              .setSubscriptionConnectionMinimumIdleSize(1);
         return Redisson.create(config);
     }
 }

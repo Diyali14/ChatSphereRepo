@@ -44,15 +44,15 @@ services:
     dockerfilePath: api-gateway/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_REDIS_HOST
         value: red-d8pdllbeo5us73aei7ng
       - key: SPRING_DATA_REDIS_HOST
         value: red-d8pdllbeo5us73aei7ng
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 6. AUTHENTICATION SERVICE
   - type: web
@@ -62,7 +62,7 @@ services:
     dockerfilePath: auth-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=auth_schema
       - key: SPRING_DATASOURCE_USERNAME
@@ -78,9 +78,9 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 7. USER PROFILE SERVICE
   - type: web
@@ -90,7 +90,7 @@ services:
     dockerfilePath: user-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=auth_schema
       - key: SPRING_DATASOURCE_USERNAME
@@ -102,9 +102,9 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 8. CHAT MESSAGE SERVICE
   - type: web
@@ -114,7 +114,7 @@ services:
     dockerfilePath: chat-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=chat_schema
       - key: SPRING_DATASOURCE_USERNAME
@@ -134,9 +134,9 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 9. GROUP COLLABORATION SERVICE
   - type: web
@@ -146,7 +146,7 @@ services:
     dockerfilePath: group-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=group_schema
       - key: SPRING_DATASOURCE_USERNAME
@@ -166,9 +166,9 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 10. MEDIA SERVICE
   - type: web
@@ -178,11 +178,11 @@ services:
     dockerfilePath: media-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 11. PRESENCE TRACKING SERVICE
   - type: web
@@ -192,15 +192,15 @@ services:
     dockerfilePath: presence-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_REDIS_HOST
         value: red-d8pdllbeo5us73aei7ng
       - key: SPRING_DATA_REDIS_HOST
         value: red-d8pdllbeo5us73aei7ng
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 12. ASYNCHRONOUS NOTIFICATION SERVICE
   - type: web
@@ -210,7 +210,7 @@ services:
     dockerfilePath: notification-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=notification_schema
       - key: SPRING_DATASOURCE_USERNAME
@@ -226,9 +226,9 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 13. REAL-TIME ANALYTICS SERVICE
   - type: web
@@ -238,7 +238,7 @@ services:
     dockerfilePath: analytics-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_REDIS_HOST
         value: red-d8pdllbeo5us73aei7ng
       - key: SPRING_DATA_REDIS_HOST
@@ -246,9 +246,9 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 14. COMPLIANCE AUDIT SERVICE
   - type: web
@@ -258,7 +258,7 @@ services:
     dockerfilePath: audit-service/Dockerfile
     envVars:
       - key: SPRING_CONFIG_IMPORT
-        value: optional:configserver:http://config-server-bk51:8888
+        value: optional:configserver:http://config-server:8888
       - key: SPRING_DATASOURCE_URL
         value: jdbc:postgresql://dpg-d89k5scm0tmc739b4ce0-a.singapore-postgres.render.com:5432/fintech_svky?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory&currentSchema=audit_schema
       - key: SPRING_DATASOURCE_USERNAME
@@ -274,9 +274,9 @@ services:
       - key: SPRING_RABBITMQ_HOST
         value: chatsphere-rabbitmq
       - key: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
       - key: EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE
-        value: http://discovery-server-rfh6:8761/eureka/
+        value: http://discovery-server:8761/eureka/
 
   # 15. REACT FRONTEND STATIC SITE
   - type: web
