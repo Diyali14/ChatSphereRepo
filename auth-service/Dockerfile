@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN mvn -pl auth-service -am clean package -DskipTests
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/auth-service/target/*.jar app.jar
 EXPOSE 8081
