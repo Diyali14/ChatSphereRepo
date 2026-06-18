@@ -26,7 +26,7 @@ public class DemoUserSeeder implements CommandLineRunner {
     }
 
     private void seedUser(String username, String email, String phone) {
-        if (userRepository.findByEmail(email).isEmpty() && userRepository.findByUsername(username).isEmpty()) {
+        if (userRepository.findByEmail(email).isEmpty()) {
             User user = User.builder()
                     .id(UUID.randomUUID())
                     .username(username)
