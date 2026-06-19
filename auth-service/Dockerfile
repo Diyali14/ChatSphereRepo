@@ -5,7 +5,11 @@ RUN mvn -pl auth-service -am clean package -DskipTests
 RUN echo 'import java.net.InetAddress; \
 public class DNSDebug { \
     public static void main(String[] args) { \
-        String[] hosts = {"chatsphere-rabbitmq", "chatsphere-rabbitmq.render.internal", "discovery-server-rfh6", "discovery-server-rfh6.render.internal", "config-server-bk51", "config-server-bk51.render.internal"}; \
+        String[] hosts = { \
+            "chatsphere-rabbitmq", "chatsphere-rabbitmq.internal", "chatsphere-rabbitmq.render.internal", \
+            "discovery-server", "discovery-server.internal", "discovery-server-rfh6", "discovery-server-rfh6.internal", "discovery-server-rfh6.render.internal", \
+            "config-server", "config-server.internal", "config-server-bk51", "config-server-bk51.internal", "config-server-bk51.render.internal" \
+        }; \
         for (String host : hosts) { \
             try { \
                 InetAddress[] addrs = InetAddress.getAllByName(host); \
